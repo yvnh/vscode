@@ -13,7 +13,7 @@ import { IBadge, NumberBadge } from 'vs/workbench/services/activity/common/activ
 import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IDisposable, toDisposable, DisposableStore, Disposable } from 'vs/base/common/lifecycle';
-import { ToggleActivityBarVisibilityAction, ToggleMenuBarAction } from 'vs/workbench/browser/actions/layoutActions';
+import { ToggleActivityBarVisibilityAction, ToggleMenuBarAction, ToggleSidebarPositionAction } from 'vs/workbench/browser/actions/layoutActions';
 import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ACTIVITY_BAR_BACKGROUND, ACTIVITY_BAR_BORDER, ACTIVITY_BAR_FOREGROUND, ACTIVITY_BAR_ACTIVE_BORDER, ACTIVITY_BAR_BADGE_BACKGROUND, ACTIVITY_BAR_BADGE_FOREGROUND, ACTIVITY_BAR_INACTIVE_FOREGROUND, ACTIVITY_BAR_ACTIVE_BACKGROUND, ACTIVITY_BAR_DRAG_AND_DROP_BORDER } from 'vs/workbench/common/theme';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
@@ -186,6 +186,13 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 					true,
 					async () => { this.instantiationService.invokeFunction(accessor => new ToggleActivityBarVisibilityAction().run(accessor)); }
 				));
+
+				const toggleSidebarPositionAction = new ToggleSidebarPositionAction(
+					ToggleSidebarPositionAction.ID,
+					ToggleSidebarPositionAction.getLabel(this.layoutService),
+					this.layoutService,
+					this.configurationService);
+				actions.push(toggleSidebarPositionAction);
 
 				return actions;
 			},
