@@ -1026,11 +1026,6 @@ declare module 'vscode' {
 		tooltip?: string | MarkdownString | /* for compilation */ any;
 
 		/**
-		 * When `iconPath` is a [ThemeColor](#ThemeColor) `iconColor` will be used to set the color of the icon.
-		 */
-		iconColor?: ThemeColor;
-
-		/**
 		 * @param label Label describing this item
 		 * @param collapsibleState [TreeItemCollapsibleState](#TreeItemCollapsibleState) of the tree item. Default is [TreeItemCollapsibleState.None](#TreeItemCollapsibleState.None)
 		 */
@@ -2281,5 +2276,15 @@ declare module 'vscode' {
 	}
 
 
+	//#endregion
+
+	//#region https://github.com/microsoft/vscode/issues/103120 @alexr00
+	export class ThemeIcon2 extends ThemeIcon {
+		/**
+		 * Returns a new `ThemeIcon` that will use the specified `ThemeColor`
+		 * @param color The `ThemeColor` to use for the icon.
+		 */
+		with(color: ThemeColor): ThemeIcon2;
+	}
 	//#endregion
 }

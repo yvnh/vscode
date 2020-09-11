@@ -13,7 +13,7 @@ import { ExtHostTreeViewsShape, MainThreadTreeViewsShape } from './extHost.proto
 import { ITreeItem, TreeViewItemHandleArg, ITreeItemLabel, IRevealOptions } from 'vs/workbench/common/views';
 import { ExtHostCommands, CommandsConverter } from 'vs/workbench/api/common/extHostCommands';
 import { asPromise } from 'vs/base/common/async';
-import { TreeItemCollapsibleState, ThemeIcon, MarkdownString as MarkdownStringType, ThemeColor } from 'vs/workbench/api/common/extHostTypes';
+import { TreeItemCollapsibleState, ThemeIcon, MarkdownString as MarkdownStringType } from 'vs/workbench/api/common/extHostTypes';
 import { isUndefinedOrNull, isString } from 'vs/base/common/types';
 import { equals, coalesce } from 'vs/base/common/arrays';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -538,7 +538,7 @@ class ExtHostTreeView<T> extends Disposable {
 		const disposable = new DisposableStore();
 		const handle = this.createHandle(element, extensionTreeItem, parent);
 		const icon = this.getLightIconPath(extensionTreeItem);
-		const item = {
+		const item: ITreeItem = {
 			handle,
 			parentHandle: parent ? parent.item.handle : undefined,
 			label: toTreeItemLabel(extensionTreeItem.label, this.extension),
@@ -549,8 +549,7 @@ class ExtHostTreeView<T> extends Disposable {
 			contextValue: extensionTreeItem.contextValue,
 			icon,
 			iconDark: this.getDarkIconPath(extensionTreeItem) || icon,
-			themeIcon: extensionTreeItem.iconPath instanceof ThemeIcon ? { id: extensionTreeItem.iconPath.id } : undefined,
-			iconColor: this.getIconColor(extensionTreeItem),
+			themeIcon: this.getThemeIcon(extensionTreeItem),
 			collapsibleState: isUndefinedOrNull(extensionTreeItem.collapsibleState) ? TreeItemCollapsibleState.None : extensionTreeItem.collapsibleState,
 			accessibilityInformation: extensionTreeItem.accessibilityInformation
 		};
@@ -564,9 +563,11 @@ class ExtHostTreeView<T> extends Disposable {
 		};
 	}
 
-	private getIconColor(extensionTreeItem: vscode.TreeItem2): ThemeColor | undefined {
-		checkProposedApiEnabled(this.extension);
-		return (extensionTreeItem.iconPath instanceof ThemeIcon) ? <ThemeColor>extensionTreeItem.iconColor : undefined;
+	private getThemeIcon(extensionTreeItem: vscode.TreeItem2): ThemeIcon | undefined {
+		if ((extensionTreeItem.iconPath instanceof ThemeIcon) && extensionTreeItem.iconPath.themeColor) {
+			checkProposedApiEnabled(this.extension);
+		}
+		return extensionTreeItem.iconPath instanceof ThemeIcon ? extensionTreeItem.iconPath : undefined;
 	}
 
 	private createHandle(element: T, { id, label, resourceUri }: vscode.TreeItem, parent: TreeNode | Root, returnFirst?: boolean): TreeItemHandle {
